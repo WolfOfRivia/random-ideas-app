@@ -1,4 +1,5 @@
 // bring in express
+const path = require('path');
 const express = require('express');
 require('dotenv').config();
 
@@ -11,6 +12,9 @@ connectDB();
 
 // initialize express
 const app = express();
+
+// Static Folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Body parser middleware
 app.use(express.json());
