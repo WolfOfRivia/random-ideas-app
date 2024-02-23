@@ -30,7 +30,7 @@ class IdeaForm {
     console.log('Submit');
   }
 
-  rendor() {
+  render() {
     this._formModal.innerHTML = `
       <form id="idea-form">
         <div class="form-control">
