@@ -1,6 +1,7 @@
 // bring in express
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 
 // set our port (for backend development brad uses 5000)
@@ -19,6 +20,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended:false }));
+
+// Cors middleware
+app.use(
+  cors({
+    allowedHeaders: ["authorization", "Content-Type"],
+    origin: ['http://localhost:5000', 'http://localhost:3000'],
+    credentials: true,
+  }) 
+); 
 
 // create routes
 app.get('/', (req, res) => {

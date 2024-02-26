@@ -1,29 +1,11 @@
+// Bring in ideas api
+import IdeasApi from "../services/ideasApi";
+
 class IdeaList {
   constructor() {
     this._ideaListEl = document.querySelector('#idea-list');
-    this._ideas = [
-      {
-        id: 1,
-        text: 'Idea 1',
-        tag: 'Business',
-        username: 'John',
-        date: '02/01/2023'
-      },
-      {
-        id: 2,
-        text: 'Idea 2',
-        tag: 'Technology',
-        username: 'Joe',
-        date: '03/02/2023'
-      },
-      {
-        id: 3,
-        text: 'Idea 3',
-        tag: 'Inventions',
-        username: 'Jane',
-        date: '04/03/2023'
-      }
-    ];
+    this._ideas = [];
+    this.getIdeas(); // do not confuse this getIdeas method, it's the one from THIS IdeaList class, NOT from the IdeasApi
     
     // Set valid tags and add them to the set
     this._validTags = new Set();
@@ -32,12 +14,24 @@ class IdeaList {
     this._validTags.add('business');
     this._validTags.add('education');
     this._validTags.add('health');
-    this._validTags.add('inventions');
+    this._validTags.add('inventions'); 
+  }
+  
+  // Get Ideas 
+  async getIdeas() {
+    try {
+      const res = await IdeasApi.getIdeas();
+      this._ideas = res.data.data;
+      this.render();
+      console.log(this._ideas);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // Create Tag class
   getTagClass(tag) {
-    tag = tag.toLowerCase();
+    tag = tag.toLowerCase(); 
     let tagClass = '';
     if(this._validTags.has(tag)) {
       tagClass = `tag-${tag}`;
