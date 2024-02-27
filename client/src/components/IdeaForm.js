@@ -1,13 +1,17 @@
+import IdeasApi from "../services/ideasApi";
+import IdeaList from "./IdeaList";
+
 class IdeaForm {
   constructor() {
     this._formModal = document.querySelector('#form-modal');
+    this._ideaList = new IdeaList();
   }
 
   addEventListeners() {
     this._form.addEventListener('submit', this.handleSubmit.bind(this));
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     // Create idea object
@@ -16,6 +20,11 @@ class IdeaForm {
       tag: this._form.elements.tag.value,
       username: this._form.elements.username.value
     }
+
+    // Add idea server
+    const newIdea = await IdeasApi.createIdea(idea);
+    // Add idea to DOM
+    this._ideaList.addIdeaToList(newIdea.data.data);
 
     // Clear fields
     this._form.elements.text.value = '';
@@ -26,8 +35,8 @@ class IdeaForm {
     // On a side note dispatchEvent is very helpful with modular code in vanilla js because it allows components to communicate with each other
     document.dispatchEvent(new Event('closemodal'));
 
-    console.log(idea);
-    console.log('Submit');
+    // console.log(idea);
+    // console.log('Submit');
   }
 
   render() {
