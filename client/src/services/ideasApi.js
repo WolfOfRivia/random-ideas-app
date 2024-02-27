@@ -7,12 +7,29 @@ class IdeasApi {
     this._apiUrl = 'http://localhost:5000/api/ideas';
   }
 
+  // Get Ideas
   getIdeas() {
     return axios.get(this._apiUrl);
   } 
 
+  // Create Idea
   createIdea(data) {
     return axios.post(this._apiUrl, data);
+  }
+
+  // Update Idea
+  updateIdea(id, data) {
+    return axios.put(`${this._apiUrl}/${id}`, data);
+  }
+
+  // Delete Idea
+  deleteIdea(id) {
+    const username = localStorage.getItem('username') ? localStorage.getItem('username') : '';
+    return axios.delete(`${this._apiUrl}/${id}`, {
+      data: {
+        username,
+      }
+    });
   }
 }
 
