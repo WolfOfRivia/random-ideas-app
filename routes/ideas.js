@@ -3,18 +3,6 @@ const express = require('express');
 const router = express.Router();
 const Idea = require('../models/Idea');
 
-// also changed all instances of app.method() to router.method()
-
-/* Keeping this in a RESTFUL structure, 
-  - when we want to get ideas we make a get request to /api/ideas
-  - when we want to create ideas we make a post request to /api/ideas
-  - when we want to delete ideas we make a delete request to /api/ideas/${the id of the idea}
-  - when we want to update ideas we make a put request to /api/ideas
-*/
-
-// We now have a working CRUD (Create, Read, Update, Delete) Api, or a full RESTFUL Api
-// What's next is using a database to persist the data, because right now this all works in memory
-
 // Get all ideas
 router.get('/', async (req, res) => {
   try {
@@ -58,17 +46,30 @@ router.post('/', async (req, res) => {
 // Update idea
 router.put('/:id', async (req, res) => {
   try {
-    const updatedIdea = await Idea.findByIdAndUpdate(
-      req.params.id, 
-      {
-        $set: {
-          text: req.body.text,
-          tag: req.body.tag
-        }
-      },
-      { new: true }
-    );
-    res.json({sucess: true, data: updatedIdea});
+    // The objective here is to give only the user who added the idea authorization to also UPDATE that idea
+    // Get idea we are updating
+    const idea = await Idea.findById(req.params.id);
+
+    // Match the Username
+    if(idea.username === req.body.username) {
+      const updatedIdea = await Idea.findByIdAndUpdate(
+        req.params.id, 
+        {
+          $set: {
+            text: req.body.text,
+            tag: req.body.tag
+          }
+        },
+        { new: true }
+      );
+      res.json({sucess: true, data: updatedIdea});
+      return;
+    }
+
+    // Usernames do not match
+    // 403 code is the unauthorized code, user is trying to update an idea that doesn't belong to them
+    res.status(403).json({ success: false, error: 'You are not authorized to update this resource'});
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: 'Something went wrong'});
@@ -78,8 +79,19 @@ router.put('/:id', async (req, res) => {
 // Delete an idea
 router.delete('/:id', async (req, res) => {
   try {
-    await Idea.findByIdAndDelete(req.params.id);
-    res.json({ success: true, data: {} });
+    // The objective here is to give only the user who added the idea authorization to also DELETE that idea
+    // Get idea we are deleting
+    const idea = await Idea.findById(req.params.id);
+
+    // Match the Username
+    if(idea.username === req.body.username) {
+      await Idea.findByIdAndDelete(req.params.id);
+      return res.json({ success: true, data: {} });
+    }
+
+    // Usernames do not match
+    // 403 code is the unauthorized code, user is trying to delete an idea that doesn't belong to them
+    res.status(403).json({ success: false, error: 'You are not authorized to delete this resource'});
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: 'Something went wrong'});
