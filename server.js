@@ -24,15 +24,24 @@ app.use(express.urlencoded({ extended:false }));
 // Cors middleware
 // NOTE: only use cors middleare in development as in production both client and
 // API are served from the same origin
-if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      allowedHeaders: ["authorization", "Content-Type"],
-      origin: ['http://localhost:5000', 'http://localhost:3000'],
-      credentials: true,
-    }) 
-  ); 
-}
+
+// Might be the one needed for dev environment
+// if (process.env.NODE_ENV !== "production") {
+//   app.use(
+//     cors({
+//       allowedHeaders: ["authorization", "Content-Type"],
+//       origin: ['http://localhost:5000', 'http://localhost:3000'],
+//       credentials: true,
+//     }) 
+//   ); 
+// }
+
+app.use(
+  cors({
+    origin: ['http://localhost:5000', 'http://localhost:3000'],
+    credentials: true,
+  }) 
+); 
 
 // create routes
 app.get('/', (req, res) => {
